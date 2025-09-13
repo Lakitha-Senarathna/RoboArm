@@ -60,7 +60,7 @@ void setTimer1(void){
 
 void setTimer2(void){
 	TCCR2A = (1 << WGM21);                  
-    TCCR2B = (1 << CS21) | (1 << CS20);     
+    TCCR2B = (1 << CS22);     
     OCR2A = 255;                            
     TIMSK2 = (1 << OCIE2A);
 }
@@ -94,17 +94,21 @@ int main(void){
     SERVO2_DDR |= (1 << SERVO2_PIN);
     SERVO3_DDR |= (1 << SERVO3_PIN);
     SERVO4_DDR |= (1 << SERVO4_PIN);
+	
+	SERVO1_PORT |= (1 << SERVO1_PIN);
+	SERVO2_PORT |= (1 << SERVO2_PIN);
+
 
 	setADC();
     setTimer0();
 	setTimer1();
     setTimer2();
-
+	
     //initial pulse width for servo1
-    OCR0A = servo1_pulse/8;
+    OCR0A = (servo1_pulse / 8) - 1;
 
     //initial pulse width for servo2
-    OCR2A = servo2_pulse/8;
+    OCR2A = (servo2_pulse / 8) - 1;
 
     //initial pulse width for servo3 and servo4
     OCR1A = servo3_pulse;
@@ -122,6 +126,9 @@ int main(void){
         servo2_pulse = adcMapping_servo2(adcJoint2);
         servo3_pulse = adcMapping_servo3(adcJoint3);
         servo4_pulse = adcMapping_servo4(adcJoint4);
+		
+		OCR1A = servo3_pulse;
+		OCR1B = servo4_pulse;
 	}
 	
 	return 0;
